@@ -12,8 +12,12 @@ import { ToolIcon } from './ToolIcon'
 
 interface ToolPageLayoutProps {
   tool: Tool
-  /** The interactive tool interface (a placeholder during Phase 1). */
+  /** The interactive tool interface. */
   children: ReactNode
+  /** Use a wider (max-w-5xl) tool slot for tools that benefit from more
+   *  horizontal space, such as the JSON formatter with its side-by-side
+   *  input/output. The header and educational content remain max-w-3xl. */
+  wide?: boolean
 }
 
 /** Build the JSON-LD structured data for a tool page. The SoftwareApplication
@@ -69,7 +73,7 @@ function buildStructuredData(tool: Tool) {
   return data
 }
 
-export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
+export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutProps) {
   return (
     <>
       <Seo
@@ -81,8 +85,8 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
       />
 
       <Container className="py-8 sm:py-12">
+        {/* Breadcrumb + page header — always narrow */}
         <div className="mx-auto max-w-3xl">
-          {/* Breadcrumb */}
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400"
@@ -94,7 +98,6 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
             <span className="text-slate-700 dark:text-slate-300">{tool.name}</span>
           </nav>
 
-          {/* Header */}
           <header className="mt-6">
             <div className="flex items-center gap-4">
               <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
@@ -112,13 +115,18 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
               {tool.useCases}
             </p>
           </header>
+        </div>
 
-          {/* Interactive tool area (placeholder until the tool ships) */}
-          <section aria-label={`${tool.name} tool`} className="mt-8">
-            {children}
-          </section>
+        {/* Interactive tool area — can be wider for tools that benefit */}
+        <section
+          aria-label={`${tool.name} tool`}
+          className={`mx-auto mt-8 ${wide ? 'max-w-5xl' : 'max-w-3xl'}`}
+        >
+          {children}
+        </section>
 
-          {/* Privacy statement */}
+        {/* Privacy note + educational content — always narrow */}
+        <div className="mx-auto max-w-3xl">
           <div className="mt-6">
             <PrivacyNote
               message={tool.privacyNote}
@@ -127,7 +135,6 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
             />
           </div>
 
-          {/* SEO / educational content below the tool */}
           <div className="mt-14 space-y-14">
             <section aria-labelledby="about-heading">
               <h2

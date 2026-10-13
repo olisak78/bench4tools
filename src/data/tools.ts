@@ -86,7 +86,7 @@ export const tools: Tool[] = [
     summary:
       'Format, validate, and inspect JSON with pretty-printing and clear error messages.',
     icon: 'json',
-    status: 'in-development',
+    status: 'available',
     seoTitle: 'JSON Formatter, Validator & Viewer',
     seoDescription:
       'Format, validate, and view JSON online. Pretty-print messy JSON, catch syntax errors, minify, and explore nested data in a tree view — in your browser.',
@@ -105,7 +105,7 @@ export const tools: Tool[] = [
       'Useful for debugging API responses, cleaning up configuration files, and making minified JSON readable before you work with it.',
     localProcessing: true,
     privacyNote:
-      'This formatter is designed to process your JSON entirely in your browser. Once it ships, the data you paste will not be uploaded or stored anywhere.',
+      'Your JSON is processed entirely in your browser. The data you paste is never uploaded, transmitted, or stored anywhere.',
     about: {
       heading: 'What is a JSON formatter?',
       paragraphs: [
@@ -134,7 +134,7 @@ export const tools: Tool[] = [
       {
         question: 'Is my JSON uploaded to a server?',
         answer:
-          'No. The formatter is designed to run entirely in your browser, so your data stays on your device.',
+          'No. The formatter runs entirely in your browser — your data stays on your device and is never transmitted anywhere.',
       },
       {
         question: 'What does "invalid JSON" mean?',
@@ -166,7 +166,7 @@ export const tools: Tool[] = [
     summary:
       'Decode and inspect the header and payload of a JSON Web Token without exposing it.',
     icon: 'jwt',
-    status: 'in-development',
+    status: 'available',
     seoTitle: 'JWT Decoder',
     seoDescription:
       'Decode JSON Web Tokens (JWT) online. Inspect the header, payload, claims, and expiry of any token — decoded in your browser, never uploaded.',
@@ -184,7 +184,7 @@ export const tools: Tool[] = [
       'Useful for debugging authentication flows, checking what claims a token carries, and confirming whether a token has expired.',
     localProcessing: true,
     privacyNote:
-      'Tokens often grant access to real accounts, so this decoder is designed to work entirely in your browser. Once it ships, your token will not be sent to or logged by any server.',
+      'Tokens often grant access to real accounts. This decoder runs entirely in your browser — your token is never sent to or logged by any server.',
     about: {
       heading: 'What is a JWT?',
       paragraphs: [
@@ -222,7 +222,7 @@ export const tools: Tool[] = [
       {
         question: 'Is it safe to paste a real token here?',
         answer:
-          'The decoder is designed to run entirely in your browser, so the token is not transmitted anywhere. Even so, treat production tokens with care and revoke any you expose.',
+          'The decoder runs entirely in your browser, so the token is not transmitted anywhere. Even so, treat production tokens with care and revoke any you expose.',
       },
       {
         question: 'Why can I read the payload without a secret?',
@@ -239,7 +239,7 @@ export const tools: Tool[] = [
     summary:
       'Convert text and data to and from Base64, with support for URL-safe output.',
     icon: 'base64',
-    status: 'in-development',
+    status: 'available',
     seoTitle: 'Base64 Encoder & Decoder',
     seoDescription:
       'Encode and decode Base64 online. Convert text and files to and from Base64, including URL-safe variants — all processed in your browser.',
@@ -257,7 +257,7 @@ export const tools: Tool[] = [
       'Useful for embedding images as data URIs, inspecting encoded values in tokens and headers, and moving binary data through text-only systems.',
     localProcessing: true,
     privacyNote:
-      'This converter is designed to run entirely in your browser. Once it ships, your input — which may include credentials or binary data — will not be sent to a server.',
+      'This converter runs entirely in your browser. Your input — which may include credentials or binary data — is never sent to a server.',
     about: {
       heading: 'What is Base64?',
       paragraphs: [
@@ -300,7 +300,7 @@ export const tools: Tool[] = [
       {
         question: 'Does my data get uploaded?',
         answer:
-          'No. The converter is designed to run in your browser, so your input never leaves your device.',
+          'No. The converter runs in your browser — your input never leaves your device.',
       },
     ],
     related: ['json-formatter', 'jwt-decoder'],
