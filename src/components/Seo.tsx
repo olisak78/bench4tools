@@ -5,7 +5,7 @@ interface SeoProps {
   /** Page title; the brand name is appended automatically. */
   title: string
   description: string
-  /** Route path, e.g. "/tools/json-formatter", used for the canonical URL. */
+  /** Route path, e.g. "/json-formatter", used for the canonical URL. */
   path: string
   keywords?: string[]
   /** Optional JSON-LD structured data object(s). */

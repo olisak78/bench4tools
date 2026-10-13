@@ -1,16 +1,35 @@
+import type { Tool } from '../data/tools'
+
 interface PrivacyNoteProps {
   /** The tool-specific privacy message. */
   message: string
-  /** Whether the tool genuinely processes everything locally. */
+  /** Whether the tool is designed to process everything locally. */
   localProcessing: boolean
+  /** Launch status — controls the tense/label so we never claim a tool runs
+   *  locally before it actually does. */
+  status: Tool['status']
 }
 
 /**
  * Shared privacy/trust callout shown on each tool page. The copy is supplied
  * per-tool so we never make an unverified claim about a tool that does not
- * actually run locally.
+ * actually run locally — and while a tool is still in development the label
+ * reflects that the guarantee is a design goal, not a verified behavior.
  */
-export function PrivacyNote({ message, localProcessing }: PrivacyNoteProps) {
+export function PrivacyNote({
+  message,
+  localProcessing,
+  status,
+}: PrivacyNoteProps) {
+  let label: string
+  if (!localProcessing) {
+    label = 'Privacy note. '
+  } else if (status === 'available') {
+    label = 'Runs in your browser. '
+  } else {
+    label = 'Private by design. '
+  }
+
   return (
     <aside
       className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-500/20 dark:bg-emerald-500/5"
@@ -30,9 +49,7 @@ export function PrivacyNote({ message, localProcessing }: PrivacyNoteProps) {
         <path d="M9 12l2 2 4-4" />
       </svg>
       <div className="text-sm leading-relaxed text-emerald-900 dark:text-emerald-200">
-        <span className="font-semibold">
-          {localProcessing ? 'Runs in your browser. ' : 'Privacy note. '}
-        </span>
+        <span className="font-semibold">{label}</span>
         {message}
       </div>
     </aside>

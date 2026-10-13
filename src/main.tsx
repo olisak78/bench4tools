@@ -15,9 +15,9 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'tools/json-formatter', element: <JsonFormatterPage /> },
-      { path: 'tools/jwt-decoder', element: <JwtDecoderPage /> },
-      { path: 'tools/base64', element: <Base64Page /> },
+      { path: 'json-formatter', element: <JsonFormatterPage /> },
+      { path: 'jwt-decoder', element: <JwtDecoderPage /> },
+      { path: 'base64-encode-decode', element: <Base64Page /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

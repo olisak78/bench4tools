@@ -16,12 +16,16 @@ interface ToolPageLayoutProps {
   children: ReactNode
 }
 
-/** Build the JSON-LD structured data for a tool page: the app itself, its
- *  FAQ, and a breadcrumb trail. */
+/** Build the JSON-LD structured data for a tool page. The SoftwareApplication
+ *  entry is only emitted once the tool is actually available, so structured
+ *  data never describes functionality the page does not yet provide. FAQPage
+ *  and BreadcrumbList always mirror visible content. */
 function buildStructuredData(tool: Tool) {
   const url = `${site.url}${tool.path}`
-  return [
-    {
+  const data: Record<string, unknown>[] = []
+
+  if (tool.status === 'available') {
+    data.push({
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: `${tool.name} — ${site.name}`,
@@ -30,35 +34,39 @@ function buildStructuredData(tool: Tool) {
       url,
       description: tool.seoDescription,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: tool.faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.question,
-        acceptedAnswer: { '@type': 'Answer', text: f.answer },
-      })),
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: site.name,
-          item: site.url,
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: tool.name,
-          item: url,
-        },
-      ],
-    },
-  ]
+    })
+  }
+
+  data.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: tool.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  })
+
+  data.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: site.name,
+        item: site.url,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: tool.name,
+        item: url,
+      },
+    ],
+  })
+
+  return data
 }
 
 export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
@@ -100,16 +108,22 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
             <p className="mt-3 text-lg leading-relaxed text-slate-500 dark:text-slate-400">
               {tool.intro}
             </p>
+            <p className="mt-2 leading-relaxed text-slate-500 dark:text-slate-400">
+              {tool.useCases}
+            </p>
           </header>
 
-          {/* Interactive tool (placeholder in Phase 1) */}
-          <div className="mt-8">{children}</div>
+          {/* Interactive tool area (placeholder until the tool ships) */}
+          <section aria-label={`${tool.name} tool`} className="mt-8">
+            {children}
+          </section>
 
           {/* Privacy statement */}
           <div className="mt-6">
             <PrivacyNote
               message={tool.privacyNote}
               localProcessing={tool.localProcessing}
+              status={tool.status}
             />
           </div>
 
@@ -165,13 +179,28 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
                         {ex.label}
                       </div>
                       <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                        <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-                          <code>{ex.input}</code>
-                        </pre>
-                        <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-                          <code>{ex.output}</code>
-                        </pre>
+                        <div>
+                          <div className="mb-1 text-xs font-medium text-slate-400">
+                            Input
+                          </div>
+                          <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+                            <code>{ex.input}</code>
+                          </pre>
+                        </div>
+                        <div>
+                          <div className="mb-1 text-xs font-medium text-slate-400">
+                            Output
+                          </div>
+                          <pre className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-3 font-mono text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+                            <code>{ex.output}</code>
+                          </pre>
+                        </div>
                       </div>
+                      {ex.note && (
+                        <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                          {ex.note}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
