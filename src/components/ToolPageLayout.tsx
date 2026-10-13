@@ -150,6 +150,41 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
               </div>
             </section>
 
+            {tool.sections?.map((section, si) => (
+              <section key={section.heading} aria-labelledby={`section-${si}-heading`}>
+                <h2
+                  id={`section-${si}-heading`}
+                  className="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
+                >
+                  {section.heading}
+                </h2>
+                {section.paragraphs && section.paragraphs.length > 0 && (
+                  <div className="mt-4 space-y-4 leading-relaxed text-slate-600 dark:text-slate-300">
+                    {section.paragraphs.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
+                  </div>
+                )}
+                {section.definitions && section.definitions.length > 0 && (
+                  <dl className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+                    {section.definitions.map((d) => (
+                      <div
+                        key={d.term}
+                        className="grid gap-1 px-4 py-3 sm:grid-cols-[7rem_1fr] sm:gap-4"
+                      >
+                        <dt className="font-mono text-sm font-semibold text-brand-700 dark:text-brand-300">
+                          {d.term}
+                        </dt>
+                        <dd className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                          {d.description}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+              </section>
+            ))}
+
             <section aria-labelledby="howto-heading">
               <h2
                 id="howto-heading"
@@ -186,7 +221,7 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
                         {ex.label}
                       </div>
                       <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                        <div>
+                        <div className="min-w-0">
                           <div className="mb-1 text-xs font-medium text-slate-400">
                             Input
                           </div>
@@ -194,7 +229,7 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
                             <code>{ex.input}</code>
                           </pre>
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <div className="mb-1 text-xs font-medium text-slate-400">
                             Output
                           </div>

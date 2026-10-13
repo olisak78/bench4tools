@@ -20,9 +20,10 @@ Every tool page renders these sections, in this order
 | A | Heading + intro + use cases | `heading`, `intro`, `useCases` | One `<h1>`; purpose understood immediately |
 | B | Interactive tool area | `children` | Labeled `<section>`; accepts any tool UI (formatter, decoder, converter, generator, comparison) |
 | C | Privacy & trust statement | `privacyNote`, `localProcessing`, `status` | Tense adapts to status; no unverified "runs locally" claim |
-| D | Educational content | `about.heading`, `about.paragraphs` | What it is, why it's used, use cases, limitations |
+| D | Educational content | `about.heading`, `about.paragraphs` | What it is, why it's used, use cases |
+| D2 | Deeper educational sections | `sections[]` | Optional `<h2>` blocks of prose and/or a definition list (`definitions[]`) — e.g. "Formatting versus validation", "Understanding common claims", "Limitations and safety" |
 | E | Usage instructions | `howToUse` | Ordered steps |
-| F | Examples | `examples[]` | Input/output + optional `note`; responsive two-column |
+| F | Examples | `examples[]` | Input/output + optional `note`; responsive two-column; values verified against the live tool |
 | G | FAQ | `faqs[]` | Native `<details>`; mirrored in FAQPage JSON-LD |
 | H | Related tools | `related[]` | Internal links to sibling tools |
 
@@ -72,9 +73,9 @@ valid and the graph extends naturally as tools are added.
 - **Primary topic:** JSON formatting. **Supporting:** validation & syntax errors, minification, tree/viewer navigation, readability.
 - **Title:** JSON Formatter, Validator & Viewer
 - **Meta description:** Format, validate, and view JSON online. Pretty-print messy JSON, catch syntax errors, minify, and explore nested data in a tree view — in your browser.
-- **Educational sections:** what a JSON formatter is; format vs. minify; the role of a tree viewer; privacy of local processing.
+- **Educational sections:** what a JSON formatter is (objects, arrays, value types, strict syntax); a dedicated "Formatting versus validation" section; privacy of local processing.
 - **Example scenarios:** pretty-print a minified object.
-- **FAQ topics:** uploads/privacy; what "invalid JSON" means; format vs. minify; the tree view; large files.
+- **FAQ topics:** how to format JSON online; uploads/privacy; what "invalid JSON" means; format vs. minify; the tree view; large files.
 - **Related:** JWT Decoder, Base64 Encoder / Decoder.
 
 ### JWT Decoder — `/jwt-decoder`
@@ -83,9 +84,9 @@ valid and the graph extends naturally as tools are added.
 - **Primary topic:** JWT decoding. **Supporting:** JWT structure (header/payload/signature), standard claims, expiration (`exp`), decode vs. verify.
 - **Title:** JWT Decoder
 - **Meta description:** Decode JSON Web Tokens (JWT) online. Inspect the header, payload, claims, and expiry of any token — decoded in your browser, never uploaded.
-- **Educational sections:** what a JWT is; its three parts; standard claims & expiration; decoding ≠ verifying.
-- **Example scenarios:** decode the header segment.
-- **FAQ topics:** does it verify the signature; how to read expiration; is it safe to paste a real token; why the payload is readable without a secret.
+- **Educational sections:** what a JWT is and its three parts; an "Understanding common claims" glossary (`iss`, `sub`, `aud`, `exp`, `iat`, `nbf`); a "Security and privacy" section on decoding ≠ verifying and local processing.
+- **Example scenarios:** decode the header segment; read the payload claims. Both use illustrative, non-credential values.
+- **FAQ topics:** the three parts of a JWT; does it verify the signature; how to read expiration; is it safe to paste a real token; why the payload is readable without a secret.
 - **Related:** Base64 Encoder / Decoder, JSON Formatter.
 
 ### Base64 Encoder / Decoder — `/base64-encode-decode`
@@ -94,9 +95,9 @@ valid and the graph extends naturally as tools are added.
 - **Primary topic:** Base64 encoding/decoding. **Supporting:** text vs. file (data URIs) use cases, URL-safe variant, common errors (padding/alphabet), encoding vs. encryption.
 - **Title:** Base64 Encoder & Decoder
 - **Meta description:** Encode and decode Base64 online. Convert text and files to and from Base64, including URL-safe variants — all processed in your browser.
-- **Educational sections:** what Base64 is; text vs. file encoding; URL-safe variant & errors; encoding is not encryption.
-- **Example scenarios:** encode text to Base64 (with padding note).
-- **FAQ topics:** is it encryption; what URL-safe Base64 is; why decoding fails; uploads/privacy.
+- **Educational sections:** what Base64 is (incl. the URL-safe variant); a "Limitations and safety" section covering encoding ≠ encryption, binary vs. readable output, and the 5 MB file cap.
+- **Example scenarios:** encode text to Base64 (with padding note); decode Base64 back to text.
+- **FAQ topics:** is it encryption; what URL-safe Base64 is; Unicode/emoji handling; file encode/decode; why decoding fails; uploads/privacy.
 - **Related:** JSON Formatter, JWT Decoder.
 
 ---
@@ -114,3 +115,8 @@ While a tool's `status` is `in-development`:
 
 When a tool ships, flip `status` to `'available'`, replace the placeholder with
 the real interface, and move the privacy copy to present tense.
+
+> **Status (Phase 4):** All three initial tools — JSON Formatter, JWT Decoder,
+> and Base64 Encoder / Decoder — are now `'available'`. Their interfaces are
+> live, privacy copy is present-tense and verified against the implementation,
+> and `SoftwareApplication` structured data is emitted for each.

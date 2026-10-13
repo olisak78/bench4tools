@@ -20,6 +20,24 @@ const EXAMPLE_TEXT = 'Hello from Bench4Tools!'
 // Pure helpers
 // ---------------------------------------------------------------------------
 
+/** Normalize a Base64 string for decoding: strip whitespace, accept the
+ *  URL-safe alphabet (-/_), and restore "=" padding so standard and URL-safe
+ *  input both decode. */
+function normalizeB64(input: string): string {
+  const cleaned = input
+    .trim()
+    .replace(/\s+/g, '')
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
+  return cleaned.padEnd(cleaned.length + ((4 - (cleaned.length % 4)) % 4), '=')
+}
+
+/** Convert standard Base64 to the URL-safe alphabet: "+" → "-", "/" → "_",
+ *  and drop "=" padding, so the result is safe in URLs and filenames. */
+function applyUrlSafe(b64: string): string {
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
+
 /** Encode arbitrary text (including Unicode) to standard Base64. */
 function encodeText(text: string): string {
   const bytes = new TextEncoder().encode(text)
@@ -36,13 +54,13 @@ function encodeText(text: string): string {
  * is not valid Base64 or the bytes are not valid UTF-8.
  */
 function decodeToText(b64: string): string {
-  const cleaned = b64.trim().replace(/\s+/g, '')
+  const cleaned = normalizeB64(b64)
   let binary: string
   try {
     binary = atob(cleaned)
   } catch {
     throw new Error(
-      'Invalid Base64 input. Check for missing padding ("="), characters outside the Base64 alphabet, or whitespace inside the string.',
+      'Invalid Base64 input. Check for characters outside the Base64 alphabet or an incomplete string.',
     )
   }
   const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
@@ -90,8 +108,7 @@ function downloadBlob(bytes: Uint8Array<ArrayBuffer>, filename: string) {
 }
 
 function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
-  const cleaned = b64.trim().replace(/\s+/g, '')
-  const binary = atob(cleaned)
+  const binary = atob(normalizeB64(b64))
   return Uint8Array.from(binary, (c) => c.charCodeAt(0)) as Uint8Array<ArrayBuffer>
 }
 
@@ -127,6 +144,7 @@ export function Base64Tool() {
   const [fileSize, setFileSize] = useState<number | null>(null)
   const [isBinary, setIsBinary] = useState(false)
   const [binaryBytes, setBinaryBytes] = useState<Uint8Array<ArrayBuffer> | null>(null)
+  const [urlSafe, setUrlSafe] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // -------- mode/type switches --------
@@ -173,7 +191,10 @@ export function Base64Tool() {
     if (!value) { setOutput(''); return }
 
     if (mode === 'encode') {
-      try { setOutput(encodeText(value)) }
+      try {
+        const encoded = encodeText(value)
+        setOutput(urlSafe ? applyUrlSafe(encoded) : encoded)
+      }
       catch (e) { setError(String(e)) }
     } else {
       try {
@@ -243,6 +264,21 @@ export function Base64Tool() {
     }
   }
 
+  // -------- url-safe toggle --------
+
+  function toggleUrlSafe(next: boolean) {
+    setUrlSafe(next)
+    // Recompute the encoded output immediately so the toggle feels live.
+    if (mode === 'encode' && inputType === 'text' && textInput) {
+      try {
+        const encoded = encodeText(textInput)
+        setOutput(next ? applyUrlSafe(encoded) : encoded)
+      } catch {
+        /* leave existing error state in place */
+      }
+    }
+  }
+
   // -------- example --------
 
   function loadExample() {
@@ -258,7 +294,7 @@ export function Base64Tool() {
   return (
     <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-900/50">
       {/* Mode toggle */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => switchMode('encode')}
@@ -273,6 +309,19 @@ export function Base64Tool() {
         >
           Decode
         </button>
+        {mode === 'encode' && inputType === 'text' && (
+          <label className="flex cursor-pointer items-center gap-1.5 pl-1">
+            <input
+              type="checkbox"
+              checked={urlSafe}
+              onChange={(e) => toggleUrlSafe(e.target.checked)}
+              className="size-3.5 rounded accent-brand-600"
+            />
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              URL-safe
+            </span>
+          </label>
+        )}
         <div className="ml-auto flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span>Input:</span>
           {(['text', 'file'] as InputType[]).map((t) => (

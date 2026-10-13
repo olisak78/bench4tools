@@ -28,6 +28,26 @@ export interface ToolExample {
   note?: string
 }
 
+/** A single named term and its explanation, used for reference-style sections
+ *  such as the JWT claims glossary. */
+export interface Definition {
+  term: string
+  description: string
+}
+
+/** An additional educational content block rendered below the "about" section.
+ *  Supports prose paragraphs, an optional definition list, or both — so a page
+ *  can carry deeper conceptual content (e.g. "Formatting versus validation",
+ *  "Understanding common claims") without bespoke per-tool components. */
+export interface ContentSection {
+  /** <h2> heading for the section. */
+  heading: string
+  /** Prose paragraphs. */
+  paragraphs?: string[]
+  /** Optional term/description reference list. */
+  definitions?: Definition[]
+}
+
 export interface Tool {
   /** URL-safe identifier used for lookups and related-tool references. */
   slug: string
@@ -69,6 +89,8 @@ export interface Tool {
     heading: string
     paragraphs: string[]
   }
+  /** Optional deeper educational sections rendered after "about". */
+  sections?: ContentSection[]
   /** Step-by-step usage instructions. */
   howToUse: string[]
   /** Worked examples. */
@@ -107,14 +129,22 @@ export const tools: Tool[] = [
     privacyNote:
       'Your JSON is processed entirely in your browser. The data you paste is never uploaded, transmitted, or stored anywhere.',
     about: {
-      heading: 'What is a JSON formatter?',
+      heading: 'What is JSON?',
       paragraphs: [
-        'JSON (JavaScript Object Notation) is the most common format for exchanging structured data between services, APIs, and configuration files. In its raw form it is often minified onto a single line, which makes it hard to read and debug.',
-        'A JSON formatter re-indents that data into a consistent, human-readable structure, highlights where values are nested, and reports exactly where invalid syntax breaks parsing — so you can fix a malformed payload in seconds instead of hunting for a misplaced comma.',
-        'Formatting and minifying are two directions of the same idea: pretty-printing adds whitespace and indentation for people to read, while minifying strips it back out to send the smallest possible payload over the wire. A tree viewer complements both by letting you collapse and expand nested objects and arrays, so you can navigate a large document without scrolling through thousands of lines.',
-        'Because JSON frequently contains API responses, tokens, or personal data, working with it in a tool that keeps everything in your browser avoids sending sensitive content to a third-party server.',
+        'JSON (JavaScript Object Notation) is the most widely used format for exchanging structured data between web services, APIs, and configuration files. It is plain text, language-independent, and easy for both people and machines to read, which is why almost every modern API speaks it.',
+        'A JSON document is built from a small set of value types. Objects are unordered collections of key/value pairs wrapped in curly braces ({ }), and arrays are ordered lists wrapped in square brackets ([ ]). Values can be strings in double quotes, numbers, the booleans true and false, or null. Objects and arrays nest inside one another to any depth, which is how JSON represents everything from a single record to a deeply structured API response.',
+        'JSON has a strict syntax, and that strictness is the point. Keys must be wrapped in double quotes, strings cannot use single quotes, and trailing commas are not allowed. A single misplaced comma or unbalanced bracket makes the whole document invalid, so a parser rejects it outright rather than guessing your intent. A formatter that validates as it parses — and points to the exact line and column where parsing failed — turns that frustrating hunt into a quick fix.',
       ],
     },
+    sections: [
+      {
+        heading: 'Formatting versus validation',
+        paragraphs: [
+          'Formatting and validation answer two different questions. Formatting is about readability: it rewrites the same data with consistent indentation and line breaks, or strips that whitespace back out when you minify, without ever changing the underlying values. Validation is about correctness: it checks whether the text is well-formed JSON in the first place.',
+          'The two work together here. Before the tool can pretty-print or minify anything, it has to parse your input, and parsing only succeeds when the JSON is valid. If it is not, you get a precise error instead of formatted output, which means a successful format is itself confirmation that your JSON is syntactically correct. Note that validation checks structure, not meaning: it confirms the document is valid JSON, not that its field names or values are the ones your application expects.',
+        ],
+      },
+    ],
     howToUse: [
       'Paste or type your JSON into the input area.',
       'The tool validates the structure and reports any syntax errors with their location.',
@@ -131,6 +161,11 @@ export const tools: Tool[] = [
       },
     ],
     faqs: [
+      {
+        question: 'How do I format JSON online?',
+        answer:
+          'Paste your JSON into the input box and choose an indentation style — the tool pretty-prints it instantly and flags any syntax errors. Everything runs in your browser, so you can format JSON online without installing anything or sending your data to a server.',
+      },
       {
         question: 'Is my JSON uploaded to a server?',
         answer:
@@ -188,12 +223,59 @@ export const tools: Tool[] = [
     about: {
       heading: 'What is a JWT?',
       paragraphs: [
-        'A JSON Web Token (JWT) is a compact, URL-safe way to represent claims between two parties. It is widely used for authentication and authorization: after you log in, a server issues a token that your client sends with each subsequent request.',
-        'A JWT has three Base64URL-encoded parts separated by dots: a header describing the signing algorithm, a payload containing the claims (such as the subject and expiry), and a signature that lets the server verify the token has not been tampered with.',
-        'The payload carries standard claims like "iss" (issuer), "sub" (subject), "iat" (issued at), and "exp" (expiration). The "exp" claim is a Unix timestamp — the number of seconds since 1970 — after which the token should no longer be accepted.',
-        'Decoding a JWT reveals the header and payload so you can see exactly what claims it carries. Decoding is not the same as verifying: a decoder reads the contents, but it does not confirm the signature is valid, which is what actually proves the token is authentic.',
+        'A JSON Web Token (JWT) is a compact, URL-safe way to represent claims between two parties. It is widely used for authentication and authorization: after you log in, a server issues a token that your client sends with each subsequent request to prove who you are.',
+        'A JWT has three Base64URL-encoded parts separated by dots: a header describing the signing algorithm and token type, a payload containing the claims, and a signature that lets the issuer detect whether the token has been altered. Only the signature depends on a secret or key — the header and payload are merely encoded, not encrypted.',
+        'The payload is a JSON object whose properties are called claims. Some are "registered" claims defined by the JWT standard — short, predefined names such as iss, sub, and exp — while others are custom claims your application chooses to include, like a user role or display name. Because the payload is just encoded JSON, you can read every claim it carries without any secret.',
       ],
     },
+    sections: [
+      {
+        heading: 'Understanding common claims',
+        paragraphs: [
+          'The payload usually contains a mix of standard registered claims and application-specific ones. These are the registered claims you will encounter most often:',
+        ],
+        definitions: [
+          {
+            term: 'iss',
+            description:
+              'Issuer — identifies who issued the token, typically your authorization server or application. Recipients use it to confirm the token came from a source they trust.',
+          },
+          {
+            term: 'sub',
+            description:
+              'Subject — the principal the token is about, most often a user or service account ID. It is the "who" that the claims describe.',
+          },
+          {
+            term: 'aud',
+            description:
+              'Audience — the recipient or recipients the token is intended for. An application is expected to reject a token whose audience does not include itself.',
+          },
+          {
+            term: 'exp',
+            description:
+              'Expiration Time — a Unix timestamp (seconds since 1970) after which the token must no longer be accepted. This decoder shows the equivalent date and whether that time has already passed.',
+          },
+          {
+            term: 'iat',
+            description:
+              'Issued At — a Unix timestamp recording when the token was created, useful for reasoning about a token’s age.',
+          },
+          {
+            term: 'nbf',
+            description:
+              'Not Before — a Unix timestamp before which the token must not be accepted. A token with a future nbf only becomes valid once that time arrives.',
+          },
+        ],
+      },
+      {
+        heading: 'Security and privacy',
+        paragraphs: [
+          'Decoding a JWT is not the same as verifying it. This tool Base64URL-decodes the header and payload so you can read their contents, but it does not check the signature — and an unverified token proves nothing. Anyone can craft a token with any claims they like, including a convincing-looking exp or sub, so a decoded payload should never be trusted on its own.',
+          'Real verification means recomputing the signature with the issuer’s secret or public key, confirming it matches, and then checking claims such as exp, nbf, and aud. That has to happen on a server that holds the key, never in a public web page. Treat this decoder as a debugging aid, not a security check.',
+          'Because tokens often grant access to live accounts, the decoder runs entirely in your browser. Your token is parsed locally with JavaScript and is never sent to, logged by, or stored on any server. Even so, any token you paste anywhere is a credential — prefer short-lived or test tokens, and revoke any production token you suspect has been exposed.',
+        ],
+      },
+    ],
     howToUse: [
       'Paste your JWT into the input field.',
       'The decoder splits the token and Base64URL-decodes the header and payload.',
@@ -205,10 +287,21 @@ export const tools: Tool[] = [
         label: 'Decode the header segment',
         input: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
         output: '{\n  "alg": "HS256",\n  "typ": "JWT"\n}',
-        note: 'The header is just Base64URL-encoded JSON describing how the token was signed.',
+        note: 'The header is just Base64URL-encoded JSON describing how the token was signed. This value is illustrative, not a real credential.',
+      },
+      {
+        label: 'Read the payload claims',
+        input: 'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFkYSBMb3ZlbGFjZSIsImlhdCI6MTcwNDA2NzIwMH0',
+        output: '{\n  "sub": "1234567890",\n  "name": "Ada Lovelace",\n  "iat": 1704067200\n}',
+        note: 'The payload is Base64URL-encoded JSON. Here it carries a subject, a name, and an issued-at timestamp — all readable without any key, which is exactly why secrets must never be placed in a token. This is sample data for illustration only.',
       },
     ],
     faqs: [
+      {
+        question: 'What are the three parts of a JWT?',
+        answer:
+          'A JWT has three dot-separated parts: the header (the signing algorithm and token type), the payload (the claims), and the signature (which the issuer uses to detect tampering). The header and payload are Base64URL-encoded JSON that anyone can decode; only the signature depends on a secret.',
+      },
       {
         question: 'Does this verify the token signature?',
         answer:
@@ -263,15 +356,24 @@ export const tools: Tool[] = [
       paragraphs: [
         'Base64 is an encoding scheme that represents binary data using a set of 64 printable ASCII characters. It is used wherever binary content needs to travel through systems that only reliably handle text — email attachments, data URIs, HTTP headers, and tokens.',
         'For text, encoding turns a string into a safe-to-transmit sequence of Base64 characters. For files, the same process lets you embed an image or small asset directly in HTML or CSS as a data URI, avoiding a separate network request. Encoding makes data roughly a third larger, and decoding reverses the process to recover the original bytes.',
-        'A URL-safe variant replaces the "+" and "/" characters with "-" and "_" so the result can be used in URLs and filenames without further escaping. A common source of errors is mixing the two variants, or corrupting the "=" padding at the end of a string.',
-        'Importantly, Base64 is encoding, not encryption. It has no secret key and anyone can reverse it, so it provides no confidentiality on its own.',
+        'A URL-safe variant replaces the "+" and "/" characters with "-" and "_" so the result can be used in URLs and filenames without further escaping, and usually drops the "=" padding. This decoder accepts both the standard and URL-safe alphabets automatically, and the encoder can produce either one.',
       ],
     },
+    sections: [
+      {
+        heading: 'Limitations and safety',
+        paragraphs: [
+          'Base64 is encoding, not encryption. It uses no key and hides nothing — anyone can decode a Base64 string back to its original bytes in seconds. Encoding a password, token, or API key does not protect it; if you need confidentiality, use real encryption and reserve Base64 for safely transporting the already-protected data.',
+          'Decoded Base64 is not always readable text. The original bytes might be an image, a PDF, or other binary data that only looks like noise when forced into a text box. When this tool detects that decoded bytes are not valid UTF-8 text, it offers them as a file download instead of printing garbled characters, so you always get the real data back intact.',
+          'Everything runs in your browser, so the practical limit is your device’s memory rather than a server quota. To keep the interface responsive, file encoding is capped at 5 MB and larger files are rejected with a clear message rather than freezing the page. Text input has no fixed limit, though very large pastes naturally use more memory.',
+        ],
+      },
+    ],
     howToUse: [
-      'Choose whether you want to encode or decode.',
-      'Paste or type your input into the field.',
-      'Optionally switch to the URL-safe variant for use in links and filenames.',
-      'Copy the converted output.',
+      'Choose Encode or Decode, and whether your input is text or a file.',
+      'Paste or type text, or select a file (up to 5 MB) to encode.',
+      'For text, switch on the URL-safe variant when the result needs to go in a URL or filename.',
+      'Copy the output, or download the result when it is a file or binary data.',
     ],
     examples: [
       {
@@ -279,6 +381,12 @@ export const tools: Tool[] = [
         input: 'Bench4Tools',
         output: 'QmVuY2g0VG9vbHM=',
         note: 'The trailing "=" is padding that makes the output length a multiple of four.',
+      },
+      {
+        label: 'Decode Base64 back to text',
+        input: 'QmVuY2g0VG9vbHM=',
+        output: 'Bench4Tools',
+        note: 'Decoding reverses the encoding exactly, recovering the original text.',
       },
     ],
     faqs: [
@@ -290,12 +398,22 @@ export const tools: Tool[] = [
       {
         question: 'What is URL-safe Base64?',
         answer:
-          'A variant that swaps the "+" and "/" characters for "-" and "_" so the encoded string can be placed in URLs and filenames without escaping.',
+          'A variant that swaps the "+" and "/" characters for "-" and "_" (and usually drops "=" padding) so the encoded string can be placed in URLs and filenames without escaping. Enable the URL-safe option when encoding; decoding accepts both variants automatically.',
+      },
+      {
+        question: 'Does it handle Unicode and emoji?',
+        answer:
+          'Yes. Text is encoded as UTF-8 before conversion, so accented characters, non-Latin scripts, and emoji all round-trip correctly. Decoding returns the original text; if the bytes are not valid UTF-8, the tool treats them as binary and offers a download.',
+      },
+      {
+        question: 'Can I encode or decode a file?',
+        answer:
+          'Yes. Switch the input to "File" to encode a file up to 5 MB into Base64, or paste a Base64 string and download the decoded result as a file. File processing happens entirely in your browser.',
       },
       {
         question: 'Why do I get an error when decoding?',
         answer:
-          'Decoding usually fails when the input contains characters outside the Base64 alphabet, has incorrect "=" padding, or mixes the standard and URL-safe variants. Check that you copied the whole string without extra spaces.',
+          'Decoding fails when the input contains characters that are not valid Base64 or when the string is incomplete or corrupted. The decoder accepts both standard and URL-safe Base64 and ignores surrounding whitespace, so copy the whole string and remove anything that is not part of it.',
       },
       {
         question: 'Does my data get uploaded?',

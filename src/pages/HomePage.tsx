@@ -5,13 +5,27 @@ import { ToolDirectory } from '../components/ToolDirectory'
 import { site } from '../data/site'
 import { tools } from '../data/tools'
 
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: site.name,
-  url: site.url,
-  description: site.description,
-}
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: site.name,
+    url: site.url,
+    description: site.description,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${site.name} tools`,
+    itemListElement: tools.map((tool, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: tool.name,
+      description: tool.summary,
+      url: `${site.url}${tool.path}`,
+    })),
+  },
+]
 
 export function HomePage() {
   return (
@@ -43,7 +57,7 @@ export function HomePage() {
               to={tools[0].path}
               className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-500"
             >
-              Explore the tools
+              Open the {tools[0].name}
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -61,7 +75,7 @@ export function HomePage() {
               href="#tools"
               className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Browse directory
+              Browse all tools
             </a>
           </div>
         </Container>
