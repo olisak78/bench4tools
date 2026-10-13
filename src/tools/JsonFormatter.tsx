@@ -3,28 +3,28 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
 import { CopyButton } from './CopyButton'
+import {
+  formatJson,
+  minifyJson,
+  parseWithError,
+  type IndentOption,
+  type JsonArray,
+  type JsonObject,
+  type JsonPrimitive,
+  type JsonValue,
+  type ParseError,
+} from './jsonLib'
 
 // ---------------------------------------------------------------------------
-// Types
+// Types (UI-only)
 // ---------------------------------------------------------------------------
 
-type IndentOption = '2' | '4' | 'tab'
 type OutputTab = 'formatted' | 'tree' | 'minified'
-
-interface ParseError {
-  message: string
-  line?: number
-  col?: number
-}
-
-type JsonPrimitive = string | number | boolean | null
-type JsonObject = { [key: string]: JsonValue }
-type JsonArray = JsonValue[]
-type JsonValue = JsonPrimitive | JsonObject | JsonArray
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -43,57 +43,6 @@ const DEFAULT_INPUT = `{
 }`
 
 const MAX_ITEMS_PER_NODE = 100
-
-// ---------------------------------------------------------------------------
-// Pure helpers (not exported — avoids only-export-components warning)
-// ---------------------------------------------------------------------------
-
-function getIndentValue(opt: IndentOption): string | number {
-  if (opt === 'tab') return '\t'
-  return parseInt(opt, 10)
-}
-
-function sortDeep(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sortDeep)
-  if (value !== null && typeof value === 'object') {
-    const sorted: Record<string, unknown> = {}
-    for (const key of Object.keys(value as object).sort()) {
-      sorted[key] = sortDeep((value as Record<string, unknown>)[key])
-    }
-    return sorted
-  }
-  return value
-}
-
-function parseWithError(input: string): { value: JsonValue; error: null } | { value: null; error: ParseError } {
-  const trimmed = input.trim()
-  if (!trimmed) return { value: null, error: { message: 'Input is empty.' } }
-  try {
-    const value = JSON.parse(trimmed) as JsonValue
-    return { value, error: null }
-  } catch (e) {
-    const raw = e instanceof Error ? e.message : String(e)
-    const posMatch = raw.match(/position\s+(\d+)/i)
-    if (posMatch) {
-      const pos = parseInt(posMatch[1], 10)
-      const before = trimmed.slice(0, pos)
-      const line = (before.match(/\n/g) ?? []).length + 1
-      const col = pos - before.lastIndexOf('\n')
-      return { value: null, error: { message: raw, line, col } }
-    }
-    return { value: null, error: { message: raw } }
-  }
-}
-
-function formatJson(value: JsonValue, indent: IndentOption, sortKeys: boolean): string {
-  const data = sortKeys ? (sortDeep(value) as JsonValue) : value
-  return JSON.stringify(data, null, getIndentValue(indent))
-}
-
-function minifyJson(value: JsonValue, sortKeys: boolean): string {
-  const data = sortKeys ? (sortDeep(value) as JsonValue) : value
-  return JSON.stringify(data)
-}
 
 // ---------------------------------------------------------------------------
 // JSON Tree Viewer
@@ -311,7 +260,13 @@ export function JsonFormatter() {
   const firstRender = useRef(true)
 
   // Live validation indicator (no output produced)
-  const liveValid = input.trim() ? parseWithError(input).error === null : null
+  // Live validation indicator. Memoized on input so we only re-parse when the
+  // text actually changes, not on every unrelated re-render (indent toggles,
+  // tab switches) — this keeps typing responsive for large documents.
+  const liveValid = useMemo(
+    () => (input.trim() ? parseWithError(input).error === null : null),
+    [input],
+  )
 
   // Define before useEffect so the effect captures the initialized function
   const runFormat = useCallback(() => {

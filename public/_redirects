@@ -1,0 +1,10 @@
+# SPA fallback: serve index.html for client-side routes so that direct hits
+# and search-engine landings on deep links (e.g. /json-formatter) resolve
+# instead of 404ing. Honored by Netlify and Cloudflare Pages.
+#
+# Other hosts need their own equivalent:
+#   - Vercel:  add a rewrite { "source": "/(.*)", "destination": "/index.html" }
+#   - Apache:  FallbackResource /index.html  (or a mod_rewrite rule)
+#   - Nginx:   try_files $uri /index.html;
+#   - GitHub Pages: copy index.html to 404.html
+/*    /index.html   200

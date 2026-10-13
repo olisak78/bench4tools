@@ -1,90 +1,16 @@
 import { useState } from 'react'
 import { CopyButton } from './CopyButton'
+import {
+  decodeJwt,
+  formatUnixTime,
+  isExpired,
+  isNotYetValid,
+  makeExampleJwt,
+  type DecodedJwt,
+} from './jwtLib'
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface DecodedJwt {
-  header: Record<string, unknown>
-  payload: Record<string, unknown>
-  rawSignature: string
-  headerJson: string
-  payloadJson: string
-}
-
-// ---------------------------------------------------------------------------
-// Example JWT (generated at module load — no external calls)
-// ---------------------------------------------------------------------------
-
-function makeExampleJwt(): string {
-  const b64url = (obj: object) =>
-    btoa(JSON.stringify(obj)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
-  const header = { alg: 'HS256', typ: 'JWT' }
-  const payload = {
-    iss: 'bench4tools.com',
-    sub: 'demo-user',
-    name: 'Ada Lovelace',
-    admin: false,
-    iat: 1704067200,   // 2024-01-01
-    exp: 1893456000,   // 2029-12-31 — well in the future
-  }
-  return `${b64url(header)}.${b64url(payload)}.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
-}
-
+// Illustrative example token, generated at module load (no network calls).
 const EXAMPLE_JWT = makeExampleJwt()
-
-// ---------------------------------------------------------------------------
-// Pure helpers
-// ---------------------------------------------------------------------------
-
-function base64UrlDecode(str: string): string {
-  const base64 = str.replace(/-/g, '+').replace(/_/g, '/')
-  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=')
-  return atob(padded)
-}
-
-function decodeJwt(token: string): DecodedJwt | string {
-  const parts = token.trim().split('.')
-  if (parts.length !== 3) {
-    return `A JWT must have exactly three dot-separated parts. This token has ${parts.length}.`
-  }
-  const [rawHeader, rawPayload, rawSig] = parts
-  let header: Record<string, unknown>
-  let payload: Record<string, unknown>
-  try {
-    header = JSON.parse(base64UrlDecode(rawHeader)) as Record<string, unknown>
-  } catch {
-    return 'Could not decode the header segment. It may be malformed Base64URL or invalid JSON.'
-  }
-  try {
-    payload = JSON.parse(base64UrlDecode(rawPayload)) as Record<string, unknown>
-  } catch {
-    return 'Could not decode the payload segment. It may be malformed Base64URL or invalid JSON.'
-  }
-  return {
-    header,
-    payload,
-    rawSignature: rawSig,
-    headerJson: JSON.stringify(header, null, 2),
-    payloadJson: JSON.stringify(payload, null, 2),
-  }
-}
-
-function formatUnixTime(ts: unknown): string | null {
-  if (typeof ts !== 'number' || !isFinite(ts)) return null
-  return new Date(ts * 1000).toUTCString()
-}
-
-function isExpired(ts: unknown): boolean | null {
-  if (typeof ts !== 'number' || !isFinite(ts)) return null
-  return Date.now() > ts * 1000
-}
-
-function isNotYetValid(ts: unknown): boolean | null {
-  if (typeof ts !== 'number' || !isFinite(ts)) return null
-  return Date.now() < ts * 1000
-}
 
 // ---------------------------------------------------------------------------
 // Sub-components

@@ -1,5 +1,14 @@
 import { useRef, useState } from 'react'
 import { CopyButton } from './CopyButton'
+import {
+  applyUrlSafe,
+  base64ToBytes,
+  Base64Error,
+  bufferToBase64,
+  decodeToText,
+  encodeText,
+  formatBytes,
+} from './base64Lib'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,74 +26,8 @@ const FILE_SIZE_LIMIT = 5 * 1024 * 1024 // 5 MB
 const EXAMPLE_TEXT = 'Hello from Bench4Tools!'
 
 // ---------------------------------------------------------------------------
-// Pure helpers
+// DOM helpers (browser-only; pure logic lives in ./base64Lib)
 // ---------------------------------------------------------------------------
-
-/** Normalize a Base64 string for decoding: strip whitespace, accept the
- *  URL-safe alphabet (-/_), and restore "=" padding so standard and URL-safe
- *  input both decode. */
-function normalizeB64(input: string): string {
-  const cleaned = input
-    .trim()
-    .replace(/\s+/g, '')
-    .replace(/-/g, '+')
-    .replace(/_/g, '/')
-  return cleaned.padEnd(cleaned.length + ((4 - (cleaned.length % 4)) % 4), '=')
-}
-
-/** Convert standard Base64 to the URL-safe alphabet: "+" → "-", "/" → "_",
- *  and drop "=" padding, so the result is safe in URLs and filenames. */
-function applyUrlSafe(b64: string): string {
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-}
-
-/** Encode arbitrary text (including Unicode) to standard Base64. */
-function encodeText(text: string): string {
-  const bytes = new TextEncoder().encode(text)
-  let binary = ''
-  const chunk = 8192
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.slice(i, i + chunk))
-  }
-  return btoa(binary)
-}
-
-/**
- * Decode Base64 to text. Returns the decoded string, or throws if the input
- * is not valid Base64 or the bytes are not valid UTF-8.
- */
-function decodeToText(b64: string): string {
-  const cleaned = normalizeB64(b64)
-  let binary: string
-  try {
-    binary = atob(cleaned)
-  } catch {
-    throw new Error(
-      'Invalid Base64 input. Check for characters outside the Base64 alphabet or an incomplete string.',
-    )
-  }
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
-  const decoder = new TextDecoder('utf-8', { fatal: true })
-  try {
-    return decoder.decode(bytes)
-  } catch {
-    throw new Error(
-      'The decoded bytes are not valid UTF-8 text. The encoded data may be binary content (an image, archive, or other file). ' +
-      'Use the file workflow to download binary data.',
-    )
-  }
-}
-
-/** Convert an ArrayBuffer to Base64, chunked to avoid stack overflow. */
-function bufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
-  const chunk = 8192
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode(...bytes.slice(i, i + chunk))
-  }
-  return btoa(binary)
-}
 
 function readFileAsBuffer(file: File): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
@@ -105,17 +48,6 @@ function downloadBlob(bytes: Uint8Array<ArrayBuffer>, filename: string) {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
-}
-
-function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
-  const binary = atob(normalizeB64(b64))
-  return Uint8Array.from(binary, (c) => c.charCodeAt(0)) as Uint8Array<ArrayBuffer>
-}
-
-function formatBytes(n: number): string {
-  if (n < 1024) return `${n} B`
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`
-  return `${(n / (1024 * 1024)).toFixed(1)} MB`
 }
 
 // ---------------------------------------------------------------------------
@@ -201,23 +133,23 @@ export function Base64Tool() {
         setOutput(decodeToText(value))
         setIsBinary(false)
         setBinaryBytes(null)
-      } catch (e) {
-        // Check if it's the "binary data" error to show the download button
-        const msg = e instanceof Error ? e.message : String(e)
-        if (msg.includes('binary content')) {
-          try {
-            const bytes = base64ToBytes(value)
-            setBinaryBytes(bytes)
-            setIsBinary(true)
-            setOutput('')
-            setError(null)
-          } catch {
-            setError(msg)
-            setIsBinary(false)
-            setBinaryBytes(null)
-          }
-        } else {
-          setError(msg)
+      } catch {
+        // decodeToText throws when the input is invalid Base64 OR when the
+        // decoded bytes are binary (not valid UTF-8 text). Distinguish the two
+        // by attempting a raw byte decode: success → binary content, so offer a
+        // download; failure → genuinely invalid input, so show the error.
+        try {
+          const bytes = base64ToBytes(value)
+          setBinaryBytes(bytes)
+          setIsBinary(true)
+          setOutput('')
+          setError(null)
+        } catch (err) {
+          setError(
+            err instanceof Base64Error
+              ? err.message
+              : 'Could not decode the Base64 input.',
+          )
           setIsBinary(false)
           setBinaryBytes(null)
         }
