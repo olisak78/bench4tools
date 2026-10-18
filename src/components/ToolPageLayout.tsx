@@ -85,8 +85,8 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
       />
 
       <Container className="py-8 sm:py-12">
-        {/* Breadcrumb + page header — always narrow */}
-        <div className="mx-auto max-w-3xl">
+        {/* Breadcrumb + page header — matches tool area width */}
+        <div className={`mx-auto ${wide ? 'w-full' : 'max-w-3xl xl:max-w-4xl'}`}>
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400"
@@ -117,10 +117,10 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
           </header>
         </div>
 
-        {/* Interactive tool area — can be wider for tools that benefit */}
+        {/* Interactive tool area — grows with the screen when wide, modest cap otherwise */}
         <section
           aria-label={`${tool.name} tool`}
-          className={`mx-auto mt-8 ${wide ? 'max-w-5xl' : 'max-w-3xl'}`}
+          className={`mx-auto mt-8 ${wide ? 'w-full' : 'max-w-3xl xl:max-w-4xl'}`}
         >
           {children}
         </section>

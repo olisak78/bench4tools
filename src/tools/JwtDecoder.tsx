@@ -151,25 +151,21 @@ export function JwtDecoder() {
           <label htmlFor="jwt-input" className="text-xs font-medium text-slate-500 dark:text-slate-400">
             Token
           </label>
-          <div className="flex items-center gap-2">
-            {!input && (
-              <button
-                type="button"
-                onClick={loadExample}
-                className="text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
-              >
-                Load example
-              </button>
-            )}
-            {input && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
-              >
-                Clear
-              </button>
-            )}
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={loadExample}
+              className={`text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 ${input ? 'invisible' : ''}`}
+            >
+              Load example
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className={`text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 ${!input ? 'invisible' : ''}`}
+            >
+              Clear
+            </button>
           </div>
         </div>
         <textarea

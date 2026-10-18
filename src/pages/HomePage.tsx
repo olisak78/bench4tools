@@ -38,7 +38,7 @@ export function HomePage() {
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,#e0f2fe_0%,transparent_70%)] dark:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(0,115,183,0.12)_0%,transparent_70%)]"
           aria-hidden="true"
         />
-        <Container className="pb-20 pt-10 text-center sm:pb-28 sm:pt-14">
+        <Container className="pb-10 pt-10 text-center sm:pb-14 sm:pt-14">
           <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
             <span className="size-1.5 rounded-full bg-brand-500" />
             Free · No sign-up · Runs in your browser
@@ -82,7 +82,7 @@ export function HomePage() {
       </section>
 
       {/* Tool directory */}
-      <Container className="scroll-mt-20 py-4" >
+      <Container className="scroll-mt-20 py-2">
         <div id="tools" className="scroll-mt-20" />
         <ToolDirectory
           heading="The toolbox"

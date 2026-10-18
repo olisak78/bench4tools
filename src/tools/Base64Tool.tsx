@@ -82,6 +82,7 @@ export function Base64Tool() {
   // -------- mode/type switches --------
 
   function switchMode(next: Mode) {
+    if (next === mode) return
     setMode(next)
     setOutput('')
     setError(null)
@@ -221,7 +222,6 @@ export function Base64Tool() {
     }
   }
 
-  const showExample = inputType === 'text' && !textInput
 
   return (
     <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-6 dark:border-slate-800 dark:bg-slate-900/50">
@@ -280,25 +280,21 @@ export function Base64Tool() {
             <label htmlFor="b64-input" className="text-xs font-medium text-slate-500 dark:text-slate-400">
               {mode === 'encode' ? 'Text to encode' : 'Base64 to decode'}
             </label>
-            <div className="flex items-center gap-2">
-              {showExample && (
-                <button
-                  type="button"
-                  onClick={loadExample}
-                  className="text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
-                >
-                  Load example
-                </button>
-              )}
-              {textInput && (
-                <button
-                  type="button"
-                  onClick={handleClear}
-                  className="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
-                >
-                  Clear
-                </button>
-              )}
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={loadExample}
+                className={`text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 ${inputType !== 'text' || textInput ? 'invisible' : ''}`}
+              >
+                Load example
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className={`text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 ${!textInput ? 'invisible' : ''}`}
+              >
+                Clear
+              </button>
             </div>
           </div>
           <textarea

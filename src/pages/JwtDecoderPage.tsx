@@ -6,7 +6,7 @@ const tool = getTool('jwt-decoder')!
 
 export function JwtDecoderPage() {
   return (
-    <ToolPageLayout tool={tool}>
+    <ToolPageLayout tool={tool} wide>
       <JwtDecoder />
     </ToolPageLayout>
   )

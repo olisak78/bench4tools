@@ -6,7 +6,7 @@ const tool = getTool('base64')!
 
 export function Base64Page() {
   return (
-    <ToolPageLayout tool={tool}>
+    <ToolPageLayout tool={tool} wide>
       <Base64Tool />
     </ToolPageLayout>
   )
