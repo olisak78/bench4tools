@@ -41,13 +41,11 @@ export function ToolIcon({ id, className = 'size-6' }: ToolIconProps) {
         </svg>
       )
     case 'base64':
-      // Binary / data conversion.
+      // Two-way arrows — encode / decode conversion.
       return (
         <svg {...common}>
-          <path d="M4 7V5h4v14H4" />
-          <path d="M4 12h4" />
-          <rect x="14" y="5" width="6" height="6" rx="2" />
-          <rect x="14" y="13" width="6" height="6" rx="2" />
+          <path d="M3 8h13M13 5l3 3-3 3" />
+          <path d="M21 16H8M11 13l-3 3 3 3" />
         </svg>
       )
   }

@@ -58,7 +58,7 @@ const TreeContext = createContext<TreeCtx>({ cmdId: 0, cmdType: 'none' })
 function primitiveColor(value: JsonPrimitive): string {
   if (value === null) return 'text-orange-500 dark:text-orange-400'
   switch (typeof value) {
-    case 'string': return 'text-emerald-600 dark:text-emerald-400'
+    case 'string': return 'text-green-600 dark:text-green-400'
     case 'number': return 'text-blue-600 dark:text-blue-400'
     case 'boolean': return 'text-amber-600 dark:text-amber-400'
     default: return 'text-slate-600 dark:text-slate-300'
@@ -326,7 +326,7 @@ export function JsonFormatter() {
 
   const validDotCls =
     liveValid === true
-      ? 'bg-emerald-500'
+      ? 'bg-green-500'
       : liveValid === false
         ? 'bg-red-500'
         : 'bg-slate-300 dark:bg-slate-600'

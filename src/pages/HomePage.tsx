@@ -35,10 +35,10 @@ export function HomePage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div
-          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,#e0e7ff_0%,transparent_70%)] dark:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(99,102,241,0.12)_0%,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_0%,#e0f2fe_0%,transparent_70%)] dark:bg-[radial-gradient(60%_60%_at_50%_0%,rgba(0,115,183,0.12)_0%,transparent_70%)]"
           aria-hidden="true"
         />
-        <Container className="py-20 text-center sm:py-28">
+        <Container className="pb-20 pt-10 text-center sm:pb-28 sm:pt-14">
           <p className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-xs font-medium text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
             <span className="size-1.5 rounded-full bg-brand-500" />
             Free · No sign-up · Runs in your browser
@@ -124,7 +124,7 @@ export function HomePage() {
         <div id="privacy" className="scroll-mt-20" />
         <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-900 p-8 text-center sm:p-14 dark:border-slate-800">
           <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(99,102,241,0.35)_0%,transparent_70%)]"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(0,115,183,0.35)_0%,transparent_70%)]"
             aria-hidden="true"
           />
           <div className="relative">

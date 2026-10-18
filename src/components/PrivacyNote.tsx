@@ -32,7 +32,7 @@ export function PrivacyNote({
 
   return (
     <aside
-      className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-500/20 dark:bg-emerald-500/5"
+      className="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50/60 p-4 dark:border-green-500/20 dark:bg-green-500/5"
       aria-label="Privacy information"
     >
       <svg
@@ -42,13 +42,13 @@ export function PrivacyNote({
         strokeWidth={1.75}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="mt-0.5 size-5 shrink-0 text-emerald-600 dark:text-emerald-400"
+        className="mt-0.5 size-5 shrink-0 text-green-600 dark:text-green-400"
         aria-hidden="true"
       >
         <path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z" />
         <path d="M9 12l2 2 4-4" />
       </svg>
-      <div className="text-sm leading-relaxed text-emerald-900 dark:text-emerald-200">
+      <div className="text-sm leading-relaxed text-green-900 dark:text-green-200">
         <span className="font-semibold">{label}</span>
         {message}
       </div>
