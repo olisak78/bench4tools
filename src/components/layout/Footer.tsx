@@ -27,6 +27,8 @@ export function Footer() {
                 <li key={tool.slug}>
                   <Link
                     to={tool.path}
+                    data-umami-event="footer-nav-click"
+                    data-umami-event-page={tool.slug}
                     className="text-sm text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
                   >
                     {tool.name}
@@ -44,6 +46,8 @@ export function Footer() {
               <li>
                 <Link
                   to="/"
+                  data-umami-event="footer-nav-click"
+                  data-umami-event-page="home"
                   className="text-sm text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
                 >
                   Home
@@ -52,6 +56,8 @@ export function Footer() {
               <li>
                 <Link
                   to="/#about"
+                  data-umami-event="footer-nav-click"
+                  data-umami-event-page="about"
                   className="text-sm text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
                 >
                   About
@@ -60,6 +66,8 @@ export function Footer() {
               <li>
                 <Link
                   to="/#privacy"
+                  data-umami-event="footer-nav-click"
+                  data-umami-event-page="privacy"
                   className="text-sm text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
                 >
                   Privacy

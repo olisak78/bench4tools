@@ -17,7 +17,7 @@ export function RelatedTools({ slugs }: { slugs: string[] }) {
       </h2>
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         {related.map((tool) => (
-          <ToolCard key={tool.slug} tool={tool} />
+          <ToolCard key={tool.slug} tool={tool} source="related" />
         ))}
       </div>
     </section>

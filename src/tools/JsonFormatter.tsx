@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { track } from '../lib/umami'
 import { CopyButton } from './CopyButton'
 import {
   formatJson,
@@ -207,6 +208,7 @@ function TreeViewer({ value }: TreeViewerProps) {
             type="button"
             onClick={() => setCmd((c) => ({ cmdId: c.cmdId + 1, cmdType: 'expand' }))}
             className="text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
+            data-umami-event="json-expand-all"
           >
             Expand all
           </button>
@@ -215,6 +217,7 @@ function TreeViewer({ value }: TreeViewerProps) {
             type="button"
             onClick={() => setCmd((c) => ({ cmdId: c.cmdId + 1, cmdType: 'collapse' }))}
             className="text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300"
+            data-umami-event="json-collapse-all"
           >
             Collapse all
           </button>
@@ -344,6 +347,8 @@ export function JsonFormatter() {
               key={opt}
               type="button"
               onClick={() => setIndent(opt)}
+              data-umami-event="json-indent-change"
+              data-umami-event-indent={opt}
               className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
                 indent === opt
                   ? 'bg-brand-600 text-white'
@@ -358,7 +363,7 @@ export function JsonFormatter() {
           <input
             type="checkbox"
             checked={sortKeys}
-            onChange={(e) => setSortKeys(e.target.checked)}
+            onChange={(e) => { setSortKeys(e.target.checked); track('json-sort-keys', { enabled: e.target.checked }) }}
             className="size-3.5 rounded accent-brand-600"
           />
           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -406,15 +411,16 @@ export function JsonFormatter() {
 
       {/* Action bar */}
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" onClick={runFormat} className={btnPrimary}>
+        <button type="button" onClick={runFormat} className={btnPrimary} data-umami-event="json-format">
           Format
         </button>
-        <button type="button" onClick={runMinify} className={btnSecondary}>
+        <button type="button" onClick={runMinify} className={btnSecondary} data-umami-event="json-minify">
           Minify
         </button>
         <button
           type="button"
           onClick={handleClear}
+          data-umami-event="json-clear"
           className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-red-900 dark:hover:bg-red-950/20 dark:hover:text-red-400"
         >
           Clear
@@ -459,6 +465,8 @@ export function JsonFormatter() {
                   key={tab}
                   type="button"
                   onClick={() => setOutputTab(tab)}
+                  data-umami-event="json-output-tab"
+                  data-umami-event-tab={tab}
                   className={tabCls(outputTab === tab)}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -466,7 +474,7 @@ export function JsonFormatter() {
               ))}
             </div>
             {outputTab !== 'tree' && (
-              <CopyButton text={activeOutputText} label="output" />
+              <CopyButton text={activeOutputText} label="output" onCopied={() => track('json-copy-output', { tab: outputTab })} />
             )}
           </div>
 

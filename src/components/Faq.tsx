@@ -1,3 +1,4 @@
+import { track } from '../lib/umami'
 import type { FaqItem } from '../data/tools'
 
 /**
@@ -5,7 +6,7 @@ import type { FaqItem } from '../data/tools'
  * accessible and works without JavaScript. Emits FAQPage JSON-LD via the
  * caller's <Seo structuredData>.
  */
-export function Faq({ items }: { items: FaqItem[] }) {
+export function Faq({ items, tool }: { items: FaqItem[]; tool: string }) {
   if (items.length === 0) return null
 
   return (
@@ -17,8 +18,14 @@ export function Faq({ items }: { items: FaqItem[] }) {
         Frequently asked questions
       </h2>
       <div className="mt-5 divide-y divide-slate-200 rounded-xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
-        {items.map((item) => (
-          <details key={item.question} className="group px-5">
+        {items.map((item, i) => (
+          <details
+            key={item.question}
+            className="group px-5"
+            onToggle={(e) => {
+              if (e.currentTarget.open) track('faq-expand', { tool, index: i })
+            }}
+          >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-sm font-medium text-slate-900 marker:content-none dark:text-white">
               {item.question}
               <svg

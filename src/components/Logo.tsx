@@ -12,6 +12,7 @@ export function Logo({ className = '' }: LogoProps) {
       to="/"
       className={`group inline-flex items-center gap-2 ${className}`}
       aria-label={`${site.name} home`}
+      data-umami-event="logo-click"
     >
       <img
         src="/logo-icon.png"

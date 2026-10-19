@@ -5,11 +5,14 @@ import { ToolIcon } from './ToolIcon'
 
 /** Directory card linking to a single tool. Used on the homepage and in the
  *  related-tools section. */
-export function ToolCard({ tool }: { tool: Tool }) {
+export function ToolCard({ tool, source }: { tool: Tool; source?: string }) {
   return (
     <Link
       to={tool.path}
       aria-label={`Open ${tool.name}`}
+      data-umami-event="tool-card-click"
+      data-umami-event-tool={tool.slug}
+      data-umami-event-source={source}
       className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-brand-500/40"
     >
       <div className="flex items-start justify-between gap-3">

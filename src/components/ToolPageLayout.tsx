@@ -249,7 +249,7 @@ export function ToolPageLayout({ tool, children, wide = false }: ToolPageLayoutP
               </section>
             )}
 
-            <Faq items={tool.faqs} />
+            <Faq items={tool.faqs} tool={tool.slug} />
 
             <RelatedTools slugs={tool.related} />
           </div>

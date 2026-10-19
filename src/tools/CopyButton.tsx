@@ -4,6 +4,7 @@ interface CopyButtonProps {
   text: string
   label?: string
   className?: string
+  onCopied?: () => void
 }
 
 type CopyStatus = 'idle' | 'copied' | 'error'
@@ -41,11 +42,12 @@ async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export function CopyButton({ text, label = 'Copy', className = '' }: CopyButtonProps) {
+export function CopyButton({ text, label = 'Copy', className = '', onCopied }: CopyButtonProps) {
   const [status, setStatus] = useState<CopyStatus>('idle')
 
   async function handleCopy() {
     const ok = await copyText(text)
+    if (ok) onCopied?.()
     setStatus(ok ? 'copied' : 'error')
     setTimeout(() => setStatus('idle'), ok ? 2000 : 3000)
   }

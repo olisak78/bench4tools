@@ -23,6 +23,7 @@ export function NotFoundPage() {
         </p>
         <Link
           to="/"
+          data-umami-event="404-back-home"
           className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-500"
         >
           Back to home

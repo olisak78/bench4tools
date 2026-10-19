@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { track } from '../lib/umami'
 import { CopyButton } from './CopyButton'
 import {
   applyUrlSafe,
@@ -176,6 +177,8 @@ export function Base64Tool() {
       return
     }
 
+    track('base64-file-select', { size_kb: Math.round(file.size / 1024) })
+
     try {
       const buffer = await readFileAsBuffer(file)
       setOutput(bufferToBase64(buffer))
@@ -201,6 +204,7 @@ export function Base64Tool() {
 
   function toggleUrlSafe(next: boolean) {
     setUrlSafe(next)
+    track('base64-url-safe-toggle', { enabled: next })
     // Recompute the encoded output immediately so the toggle feels live.
     if (mode === 'encode' && inputType === 'text' && textInput) {
       try {
@@ -230,6 +234,8 @@ export function Base64Tool() {
         <button
           type="button"
           onClick={() => switchMode('encode')}
+          data-umami-event="base64-mode-switch"
+          data-umami-event-mode="encode"
           className={mode === 'encode' ? tabActive : tabInactive}
         >
           Encode
@@ -237,6 +243,8 @@ export function Base64Tool() {
         <button
           type="button"
           onClick={() => switchMode('decode')}
+          data-umami-event="base64-mode-switch"
+          data-umami-event-mode="decode"
           className={mode === 'decode' ? tabActive : tabInactive}
         >
           Decode
@@ -261,6 +269,8 @@ export function Base64Tool() {
               key={t}
               type="button"
               onClick={() => switchInputType(t)}
+              data-umami-event="base64-input-type-switch"
+              data-umami-event-type={t}
               className={`rounded px-2.5 py-1 font-medium transition-colors ${
                 inputType === t
                   ? 'bg-brand-600 text-white'
@@ -284,6 +294,7 @@ export function Base64Tool() {
               <button
                 type="button"
                 onClick={loadExample}
+                data-umami-event="base64-load-example"
                 className={`text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 ${inputType !== 'text' || textInput ? 'invisible' : ''}`}
               >
                 Load example
@@ -291,6 +302,7 @@ export function Base64Tool() {
               <button
                 type="button"
                 onClick={handleClear}
+                data-umami-event="base64-clear"
                 className={`text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 ${!textInput ? 'invisible' : ''}`}
               >
                 Clear
@@ -356,6 +368,7 @@ export function Base64Tool() {
                   <button
                     type="button"
                     onClick={handleClear}
+                    data-umami-event="base64-clear"
                     className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400"
                   >
                     Remove
@@ -368,7 +381,7 @@ export function Base64Tool() {
               <div className="mb-1.5 flex items-center justify-between">
                 <span className="text-xs text-slate-500 dark:text-slate-400">Paste the Base64 string and click Download</span>
                 {textInput && (
-                  <button type="button" onClick={handleClear} className="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400">Clear</button>
+                  <button type="button" onClick={handleClear} data-umami-event="base64-clear" className="text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400">Clear</button>
                 )}
               </div>
               <textarea
@@ -385,6 +398,7 @@ export function Base64Tool() {
                 type="button"
                 onClick={handleDownload}
                 disabled={!textInput.trim()}
+                data-umami-event="base64-download"
                 className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500 disabled:pointer-events-none disabled:opacity-40"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-4" aria-hidden="true">
@@ -429,6 +443,7 @@ export function Base64Tool() {
           <button
             type="button"
             onClick={() => downloadBlob(binaryBytes, 'decoded-file')}
+            data-umami-event="base64-download"
             className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="size-4" aria-hidden="true">
@@ -448,7 +463,7 @@ export function Base64Tool() {
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               {mode === 'encode' ? 'Base64 output' : 'Decoded text'}
             </span>
-            <CopyButton text={output} label="output" />
+            <CopyButton text={output} label="output" onCopied={() => track('base64-copy-output')} />
           </div>
           <textarea
             readOnly

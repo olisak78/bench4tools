@@ -28,11 +28,11 @@ export function Header() {
             className="hidden items-center gap-1 md:flex"
             aria-label="Primary"
           >
-            <NavLink to="/" end className={navLinkClass}>
+            <NavLink to="/" end className={navLinkClass} data-umami-event="nav-click" data-umami-event-page="home">
               Home
             </NavLink>
             {tools.map((tool) => (
-              <NavLink key={tool.slug} to={tool.path} className={navLinkClass}>
+              <NavLink key={tool.slug} to={tool.path} className={navLinkClass} data-umami-event="nav-click" data-umami-event-page={tool.slug}>
                 {tool.name}
               </NavLink>
             ))}
@@ -44,6 +44,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
+              data-umami-event={open ? undefined : 'mobile-menu-open'}
               className="grid size-9 place-items-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 md:hidden dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800"
               aria-expanded={open}
               aria-controls="mobile-nav"
@@ -83,6 +84,8 @@ export function Header() {
                 end
                 className={navLinkClass}
                 onClick={() => setOpen(false)}
+                data-umami-event="nav-click"
+                data-umami-event-page="home"
               >
                 Home
               </NavLink>
@@ -92,6 +95,8 @@ export function Header() {
                   to={tool.path}
                   className={navLinkClass}
                   onClick={() => setOpen(false)}
+                  data-umami-event="nav-click"
+                  data-umami-event-page={tool.slug}
                 >
                   {tool.name}
                 </NavLink>

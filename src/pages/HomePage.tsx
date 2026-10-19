@@ -56,6 +56,8 @@ export function HomePage() {
             <Link
               to={tools[0].path}
               className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-500"
+              data-umami-event="hero-cta-click"
+              data-umami-event-tool={tools[0].slug}
             >
               Open the {tools[0].name}
               <svg
@@ -74,6 +76,7 @@ export function HomePage() {
             <a
               href="#tools"
               className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              data-umami-event="browse-tools-click"
             >
               Browse all tools
             </a>

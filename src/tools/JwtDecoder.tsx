@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { track } from '../lib/umami'
 import { CopyButton } from './CopyButton'
 import {
   decodeJwt,
@@ -16,14 +17,14 @@ const EXAMPLE_JWT = makeExampleJwt()
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function JsonBlock({ label, json, onCopy }: { label: string; json: string; onCopy: string }) {
+function JsonBlock({ label, json, onCopy, onCopied }: { label: string; json: string; onCopy: string; onCopied?: () => void }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2.5 dark:border-slate-700">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {label}
         </span>
-        <CopyButton text={onCopy} label={label} />
+        <CopyButton text={onCopy} label={label} onCopied={onCopied} />
       </div>
       <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-slate-800 dark:text-slate-200">
         <code>{json}</code>
@@ -155,6 +156,7 @@ export function JwtDecoder() {
             <button
               type="button"
               onClick={loadExample}
+              data-umami-event="jwt-load-example"
               className={`text-xs text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 ${input ? 'invisible' : ''}`}
             >
               Load example
@@ -162,6 +164,7 @@ export function JwtDecoder() {
             <button
               type="button"
               onClick={handleClear}
+              data-umami-event="jwt-clear"
               className={`text-xs text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 ${!input ? 'invisible' : ''}`}
             >
               Clear
@@ -202,11 +205,13 @@ export function JwtDecoder() {
             label="Header"
             json={decoded.headerJson}
             onCopy={decoded.headerJson}
+            onCopied={() => track('jwt-copy-header')}
           />
           <JsonBlock
             label="Payload"
             json={decoded.payloadJson}
             onCopy={decoded.payloadJson}
+            onCopied={() => track('jwt-copy-payload')}
           />
           <ClaimsSummary payload={decoded.payload} />
 
