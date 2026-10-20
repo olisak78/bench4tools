@@ -9,13 +9,28 @@ export function Footer() {
 
   return (
     <footer className="mt-24 border-t border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40">
-      <Container className="py-12">
+      <Container className="pb-12 pt-4">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div className="max-w-sm">
-            <Logo />
+            <Logo small />
             <p className="mt-4 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
               {site.description}
             </p>
+            <div className="mt-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+                Support this project
+              </p>
+              <div className="mt-3 flex items-center gap-4">
+                <img
+                  src="/qr-code.png"
+                  alt="Buy Me a Coffee QR code"
+                  className="size-20 shrink-0 rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-700"
+                />
+                <p className="text-base leading-relaxed text-slate-500 dark:text-slate-400">
+                  If this saved you time, scan to buy me a coffee ☕
+                </p>
+              </div>
+            </div>
           </div>
 
           <nav aria-label="Tools">

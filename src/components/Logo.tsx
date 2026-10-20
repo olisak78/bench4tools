@@ -3,10 +3,11 @@ import { site } from '../data/site'
 
 interface LogoProps {
   className?: string
+  small?: boolean
 }
 
 /** Brand mark + wordmark, links back to the homepage. */
-export function Logo({ className = '' }: LogoProps) {
+export function Logo({ className = '', small = false }: LogoProps) {
   return (
     <Link
       to="/"
@@ -18,13 +19,13 @@ export function Logo({ className = '' }: LogoProps) {
         src="/logo-icon.png"
         alt=""
         aria-hidden="true"
-        className="size-9 shrink-0 object-contain"
+        className={`${small ? 'size-6' : 'size-9'} shrink-0 object-contain`}
       />
       <img
         src="/logo-wordmark.png"
         alt=""
         aria-hidden="true"
-        className="h-auto w-[260px] object-contain"
+        className={`h-auto ${small ? 'w-[160px]' : 'w-[260px]'} object-contain`}
       />
     </Link>
   )
