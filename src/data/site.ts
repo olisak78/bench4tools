@@ -10,7 +10,7 @@ export const site = {
   // Production origin — used to build absolute canonical URLs and structured data.
   // Update this when the final domain is registered.
   url: 'https://bench4tools.com',
-  author: 'Bench4Tools',
+  author: 'Blue Acara Project',
   // Short list of the product principles, surfaced on the landing page.
   principles: [
     {

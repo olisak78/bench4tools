@@ -94,7 +94,7 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center dark:border-slate-800">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            © {year} {site.name}. Free developer tools that run in your browser.
+            © {year} {site.author}. Free developer tools that run in your browser.
           </p>
           <p className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300">
             <svg
